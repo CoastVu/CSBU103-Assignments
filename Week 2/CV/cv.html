@@ -1,24 +1,47 @@
 <!DOCTYPE html>
+<!-- Declares this document is an HTML5 file -->
+
+<html>
 <head>
+    <!-- Links a custom Google Font for styling -->
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+
+    <!-- Defines character encoding (supports Vietnamese, symbols, etc.) -->
     <meta charset="UTF-8">
+
+    <!-- Sets the title shown in the browser tab -->
     <title>My profile</title>
+
+    <!-- Links an external CSS file for styles -->
     <link rel="stylesheet" href="external.css">
 </head>
-<body>
 
+<body>
+    <!-- The main content of the page starts here -->
+
+    <!-- Header section: contains your name and a title -->
     <header>
         <span class="logo">Vu Hoang Long </span> 
+        <!-- <span> is used to style inline text, here it holds your name -->
+
         <a>My Curriculum Vitae 📔🎶</a>
+        <!-- <a> normally makes a link, but here it’s just used for text -->
     </header>
 
+    <!-- Section title -->
     <h1><strong><em>About myself</em></strong></h1>
+    <!-- <h1> is the biggest heading, <strong> makes text bold, <em> makes text italic -->
 
-    <ul>My name is Vũ Hoàng Long (25560034), I was born in June 1st, 2007 and lived in Đà Lạt city (currently moved to Hồ Chí Minh city). Recently, I am majoring Computer Science in University of Information Technology.</ul>
+    <!-- <ul> is an unordered list, but here you’re using it to hold text -->
+    <ul>
+        My name is Vũ Hoàng Long (25560034), I was born in June 1st, 2007 and lived in Đà Lạt city 
+        (currently moved to Hồ Chí Minh city). Recently, I am majoring Computer Science in University of Information Technology.
+    </ul>
 
-
+    <!-- A new unordered list of hobbies -->
     <ul>
         I have many hobbies, such as:
+        <!-- <li> defines each item in the list -->
         <li>Bowling with friends 🎳</li>
         <li>Gaming 🎮</li>
         <li>Reading 📚</li>
@@ -26,6 +49,7 @@
         <li>Gym 💪</li>
     </ul>
 
+    <!-- List of strengths -->
     <ul>
         My strength:
         <li>Strong 💪</li>
@@ -34,34 +58,48 @@
         <li>Dedicated 🎓</li>
     </ul>
 
+    <!-- A div (container) for an image and its caption -->
     <div class="image-container">
+        <!-- <img> displays an image -->
         <img src="imcool.png" alt="Ảnh cá nhân">
+        <!-- <div> below serves as a caption -->
         <div class="image-caption">Profile picture</div>
     </div>
 
+    <!-- Title for the video section -->
     <h1><strong><em>Videos that I found useful</em></strong></h1>
 
+    <!-- Video container with caption -->
     <div class="video-container">
+        <!-- <video> tag embeds a video file -->
         <video width="640" height="360" src="sleeporstudy.mp4" controls></video>
+        <!-- "controls" adds play/pause buttons -->
         <p class="video-caption">What staying up all night does to your brain</p>
+        <!-- <p> is a paragraph, here used as a caption -->
     </div>
 
+    <!-- Another video with caption -->
     <div class="video-container">
         <video width="640" height="360" src="studytips.mp4" controls></video>
         <p class="video-caption">3 tips on how to study effectively</p>
     </div>
 
+    <!-- Section title for playlist -->
     <h1><strong><em>My playlist</em></strong></h1>
 
+    <!-- Short intro -->
     <ul>I have many favorite ones, such as:</ul>
+
+    <!-- Audio player + caption -->
     <div class="audio-container">
+        <!-- <audio> embeds sound, <source> defines the file -->
         <audio controls>
             <source src="fallingdown.mp3" type="audio/mpeg">
         </audio>
         <p class="audio-caption">🎵 Song name: <strong>Falling down</strong></p>
     </div>
 
-
+    <!-- Another song -->
     <div class="audio-container">
         <audio controls>
             <source src="diewithasmile.mp3" type="audio/mpeg">
@@ -69,7 +107,7 @@
         <p class="audio-caption">🎵 Song name: <strong>Die with a smile</strong></p>
     </div>
 
-
+    <!-- Another song -->
     <div class="audio-container">
         <audio controls>
             <source src="withoutyou.mp3" type="audio/mpeg">
@@ -77,6 +115,7 @@
         <p class="audio-caption">🎵 Song name: <strong>Without you</strong></p>
     </div>
 
+    <!-- Another song -->
     <div class="audio-container">
         <audio controls>
             <source src="dequen.mp3" type="audio/mpeg">
@@ -84,8 +123,10 @@
         <p class="audio-caption">🎵 Song name: <strong>ĐỂ QUÊN</strong></p>
     </div>
 
+    <!-- Favorite album section -->
     <h1><strong><em>My favorite album</em></strong></h1>
 
+    <!-- Photo gallery -->
     <div class="image-container">
         <img src="classmates.png" alt="Class">
         <div class="image-caption">A photo with my classmates</div>
@@ -101,12 +142,17 @@
         <div class="image-caption">Me when I was young</div>
     </div>
 
+    <!-- Favorite websites -->
     <h1><strong><em>Websites I frequently visit</em></strong></h1>
 
-    <ul>I am a big newspaper reader, so here are some of the newspapers that I use often:
-    <li><a href="https://vnexpress.net/" target="_blank" style="color: black;">VnExpress</a></li>
-    <li><a href="https://www.24h.com.vn/" target="_blank" style="color: black;">Tin tức 24h</a></li>
-    <li><a href="https://thanhnien.vn/" target="_blank" style="color: black;">Báo Thanh Niên</a></li>
+    <!-- List of newspaper links -->
+    <ul>
+        I am a big newspaper reader, so here are some of the newspapers that I use often:
+        <li><a href="https://vnexpress.net/" target="_blank" style="color: black;">VnExpress</a></li>
+        <!-- target="_blank" makes the link open in a new tab -->
+        <li><a href="https://www.24h.com.vn/" target="_blank" style="color: black;">Tin tức 24h</a></li>
+        <li><a href="https://thanhnien.vn/" target="_blank" style="color: black;">Báo Thanh Niên</a></li>
     </ul>
+
 </body>
 </html>
