@@ -1,0 +1,230 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Biketrak</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-zinc-100 p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-zinc-800">
+                <span class="text-red-500">Bike</span>trak Admin
+            </h1>
+            <div>
+                <a href="homepage6.html" class="text-zinc-800 hover:text-red-500 mr-4">View Site</a>
+                <a href="login2.html" class="text-zinc-800 hover:text-red-500">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-4">
+        <!-- Create Form -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-2xl font-bold mb-4">Add New Motorbike</h2>
+            <form id="createForm" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block mb-1">Name:</label>
+                        <input type="text" name="name" required class="w-full p-2 border rounded">
+                    </div>
+                    <div>
+                        <label class="block mb-1">Brand:</label>
+                        <input type="text" name="brand" required class="w-full p-2 border rounded">
+                    </div>
+                    <div>
+                        <label class="block mb-1">CC:</label>
+                        <input type="number" name="cc" required class="w-full p-2 border rounded">
+                    </div>
+                    <div>
+                        <label class="block mb-1">Price:</label>
+                        <input type="number" name="price" required class="w-full p-2 border rounded">
+                    </div>
+                </div>
+                <div>
+                    <label class="block mb-1">Image:</label>
+                    <input type="file" name="image" accept="image/*" required class="w-full p-2 border rounded">
+                </div>
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                    Add Motorbike
+                </button>
+            </form>
+        </div>
+
+        <!-- Motorbikes List -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-bold mb-4">Manage Motorbikes</h2>
+            <div id="motorbikesList" class="space-y-4"></div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-md w-96">
+            <h3 class="text-xl font-bold mb-4">Edit Motorbike</h3>
+            <form id="editForm" class="space-y-4">
+                <input type="hidden" name="id">
+                <div>
+                    <label class="block mb-1">Name:</label>
+                    <input type="text" name="name" required class="w-full p-2 border rounded">
+                </div>
+                <div>
+                    <label class="block mb-1">Brand:</label>
+                    <input type="text" name="brand" required class="w-full p-2 border rounded">
+                </div>
+                <div>
+                    <label class="block mb-1">CC:</label>
+                    <input type="number" name="cc" required class="w-full p-2 border rounded">
+                </div>
+                <div>
+                    <label class="block mb-1">Price:</label>
+                    <input type="number" name="price" required class="w-full p-2 border rounded">
+                </div>
+                <div>
+                    <label class="block mb-1">Image:</label>
+                    <input type="file" name="image" accept="image/*" class="w-full p-2 border rounded">
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeEditModal()" class="bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const createForm = document.getElementById('createForm');
+            const editForm = document.getElementById('editForm');
+            const motorbikesList = document.getElementById('motorbikesList');
+            const editModal = document.getElementById('editModal');
+
+            async function fetchMotorbikes() {
+                try {
+                    const response = await fetch('/api/motorbikes');
+                    const motorbikes = await response.json();
+                    displayMotorbikes(motorbikes);
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error fetching motorbikes');
+                }
+            }
+
+            function displayMotorbikes(motorbikes) {
+                motorbikesList.innerHTML = motorbikes.map(motorbike => `
+                    <div class="border p-4 rounded flex justify-between items-center">
+                        <div class="flex items-center space-x-4">
+                            <img src="${motorbike.imageUrl}" alt="${motorbike.name}" class="w-16 h-16 object-cover rounded">
+                            <div>
+                                <h3 class="font-bold">${motorbike.name}</h3>
+                                <p>${motorbike.brand} - ${motorbike.cc}cc - $${motorbike.price}</p>
+                            </div>
+                        </div>
+                        <div class="space-x-2">
+                            <button onclick="editMotorbike('${motorbike._id}')" class="bg-blue-500 text-white px-3 py-1 rounded">
+                                Edit
+                            </button>
+                            <button onclick="deleteMotorbike('${motorbike._id}')" class="bg-red-500 text-white px-3 py-1 rounded">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            createForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(createForm);
+                try {
+                    const response = await fetch('/api/motorbikes', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    if (response.ok) {
+                        createForm.reset();
+                        fetchMotorbikes();
+                        alert('Motorbike added successfully');
+                    } else {
+                        throw new Error('Failed to add motorbike');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error adding motorbike');
+                }
+            });
+
+            window.editMotorbike = async (id) => {
+                try {
+                    const response = await fetch(`/api/motorbikes/${id}`);
+                    const motorbike = await response.json();
+                    
+                    editForm.elements.id.value = motorbike._id;
+                    editForm.elements.name.value = motorbike.name;
+                    editForm.elements.brand.value = motorbike.brand;
+                    editForm.elements.cc.value = motorbike.cc;
+                    editForm.elements.price.value = motorbike.price;
+                    
+                    editModal.classList.remove('hidden');
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error fetching motorbike details');
+                }
+            };
+
+            window.closeEditModal = () => {
+                editModal.classList.add('hidden');
+                editForm.reset();
+            };
+
+            editForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(editForm);
+                const id = formData.get('id');
+                
+                try {
+                    const response = await fetch(`/api/motorbikes/${id}`, {
+                        method: 'PUT',
+                        body: formData
+                    });
+                    
+                    if (response.ok) {
+                        closeEditModal();
+                        fetchMotorbikes();
+                        alert('Motorbike updated successfully');
+                    } else {
+                        throw new Error('Failed to update motorbike');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error updating motorbike');
+                }
+            });
+
+            window.deleteMotorbike = async (id) => {
+                if (confirm('Are you sure you want to delete this motorbike?')) {
+                    try {
+                        const response = await fetch(`/api/motorbikes/${id}`, {
+                            method: 'DELETE'
+                        });
+                        
+                        if (response.ok) {
+                            fetchMotorbikes();
+                            alert('Motorbike deleted successfully');
+                        } else {
+                            throw new Error('Failed to delete motorbike');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error deleting motorbike');
+                    }
+                }
+            };
+
+            fetchMotorbikes();
+        });
+    </script>
+</body>
+</html>

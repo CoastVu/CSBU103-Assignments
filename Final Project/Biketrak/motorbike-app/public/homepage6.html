@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biketrak</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <style>
+        .motorbike-card:hover {
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+        .highlight {
+            font-weight: bold;
+        }
+        .sticky-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            backdrop-filter: blur(5px);
+        }
+        .content-wrapper {
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Sticky Navigation -->
+    <nav class="sticky-nav bg-gradient-to-r from-green-500 to-blue-500 p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex space-x-4">
+                <a href="Create.html" class="cursor-pointer text-white hover:text-gray-200 transition-colors">Create</a>
+            </div>
+            <h1 class="text-2xl font-bold text-white">
+                <a href="homepage6.html" class="text-white-500">Biketrak</a>
+            </h1>
+            <div class="flex space-x-4">
+                <span id="navUsername" class="text-white mr-4"></span>
+                <a id="logoutButton" class="text-white hover:text-gray-200 transition-colors cursor-pointer">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="content-wrapper">
+        <div class="container mx-auto p-4">
+            <!-- Search Section -->
+            <div class="mb-8">
+                <div class="relative">
+                    <input type="text" 
+                           id="searchBar" 
+                           class="w-full border border-gray-300 rounded-lg py-3 px-4 pl-12 focus:outline-none focus:ring-2 focus:ring-red-500"
+                           placeholder="Search motorbikes by name, brand, cc, or price...">
+                    <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+
+            <!-- Motorbike Grid -->
+            <div id="motorbikeGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Motorbike cards will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-green-500 to-blue-500 mt-12 p-8">
+        <div class="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-white">
+            <!-- Contact Info -->
+            <div>
+                <h3 class="text-xl font-bold mb-4">Contact Us</h3>
+                <div class="space-y-2">
+                    <p class="flex items-center">
+                        <i class="fas fa-envelope mr-2"></i>
+                        <a href="mailto:info@biketrak.com" class="hover:text-gray-200">info@biketrak.com</a>
+                    </p>
+                    <p class="flex items-center">
+                        <i class="fas fa-phone mr-2"></i>
+                        <a href="tel:+1234567890" class="hover:text-gray-200">+1 (234) 567-890</a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Introduction -->
+            <div>
+                <h3 class="text-xl font-bold mb-4">About Biketrak</h3>
+                <p class="text-sm leading-relaxed">
+                    Your trusted source for comprehensive motorcycle information. 
+                    Browse, compare, and find your perfect ride with detailed specifications 
+                    and expert insights.
+                </p>
+            </div>
+
+            <!-- Quick Links -->
+            <div>
+                <h3 class="text-xl font-bold mb-4">Quick Links</h3>
+                <ul class="space-y-2">
+                    <li><a href="#" class="hover:text-gray-200">Home</a></li>
+                    <li><a href="#" class="hover:text-gray-200">About Us</a></li>
+                    <li><a href="#" class="hover:text-gray-200">Terms of Service</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="container mx-auto mt-8 pt-4 border-t border-white/20 text-center text-white">
+            <p>&copy; 2025 Biketrak. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+    const nameEl = document.getElementById('navUsername');
+    console.log('Token in homepage6:', token);
+    if (!token) {
+        // no token -> keep hidden or show Login link
+        if (nameEl) nameEl.classList.add('hidden');
+        return;
+    }
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+        const username = payload.username || payload.email || payload.name || payload.user;
+        if (username && nameEl) {
+        nameEl.textContent = username;
+        nameEl.classList.remove('hidden');
+        }
+    } catch (e) {
+        console.warn('Invalid token for nav username', e);
+    }
+    });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            const motorbikeGrid = document.getElementById('motorbikeGrid');
+            const searchBar = document.getElementById('searchBar');
+            const logoutButton = document.getElementById('logoutButton');
+            let motorbikes = [];
+
+            async function fetchMotorbikes() {
+                try {
+                    const response = await fetch('/api/motorbikes');
+                    motorbikes = await response.json();
+                    displayMotorbikes(motorbikes);
+                } catch (error) {
+                    console.error('Error:', error);
+                    motorbikeGrid.innerHTML = '<p class="col-span-full text-center text-red-500">Error loading motorbikes</p>';
+                }
+            }
+
+            function searchMotorbikes(query) {
+                const searchTerms = query.toLowerCase().split(' ');
+                return motorbikes.filter(motorbike => {
+                    const searchText = `${motorbike.name} ${motorbike.brand} ${motorbike.cc} ${motorbike.price}`.toLowerCase();
+                    return searchTerms.every(term => searchText.includes(term));
+                });
+            }
+
+            function highlightText(text, query) {
+                if (!query) return text;
+                const terms = query.split(' ');
+                let highlightedText = text.toString();
+                terms.forEach(term => {
+                    if (term.trim()) {
+                        const regex = new RegExp(`(${term})`, 'gi');
+                        highlightedText = highlightedText.replace(regex, '<span class="highlight">$1</span>');
+                    }
+                });
+                return highlightedText;
+            }
+
+            function displayMotorbikes(filteredMotorbikes) {
+                motorbikeGrid.innerHTML = '';
+                const query = searchBar.value.toLowerCase();
+
+                if (filteredMotorbikes.length === 0) {
+                    motorbikeGrid.innerHTML = '<p class="col-span-full text-center text-gray-500 py-8">No motorbikes found</p>';
+                    return;
+                }
+
+                filteredMotorbikes.forEach(motorbike => {
+                    const card = document.createElement('div');
+                    card.className = 'motorbike-card bg-white p-4 rounded-lg shadow-md';
+                    card.innerHTML = `
+                        <a href="motorbike.html?id=${motorbike._id}" class="block">
+                            <img src="${motorbike.imageUrl}" alt="${motorbike.name}" class="w-full h-48 object-cover rounded-md mb-4">
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">${highlightText(motorbike.name, query)}</h3>
+                            <p class="text-gray-600 mb-1">${highlightText(motorbike.brand, query)}</p>
+                            <p class="text-gray-600 mb-1">${highlightText(motorbike.cc, query)} cc</p>
+                            <p class="text-gray-600">$${highlightText(motorbike.price, query)}</p>
+                        </a>
+                    `;
+                    motorbikeGrid.appendChild(card);
+                });
+            }
+
+            let searchTimeout;
+            searchBar.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    const query = this.value.trim();
+                    const filteredMotorbikes = query ? searchMotorbikes(query) : motorbikes;
+                    displayMotorbikes(filteredMotorbikes);
+                }, 300);
+            });
+
+            logoutButton.addEventListener('click', function() {
+                localStorage.removeItem('authToken');
+                sessionStorage.removeItem('authToken');
+                window.location.href = 'logout.html';
+            });
+
+            fetchMotorbikes();
+        });
+    </script>
+</body>
+</html>
